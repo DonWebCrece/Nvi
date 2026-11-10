@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuenta Regresiva para Navidad 🎄✨</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@700&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 40%, #450a0a 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: #ffffff;
+        }
+
+        .font-christmas {
+            font-family: 'Mountains of Christmas', cursive;
+        }
+
+        /* Animated Snowfall Canvas */
+        #snow-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* Glassmorphic Card */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Christmas Lights Glow */
+        .light-bulb {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: flash 1.5s infinite alternate;
+        }
+
+        .light-bulb:nth-child(4n+1) { background: #ef4444; box-shadow: 0 0 10px #ef4444; animation-delay: 0s; }
+        .light-bulb:nth-child(4n+2) { background: #22c55e; box-shadow: 0 0 10px #22c55e; animation-delay: 0.4s; }
+        .light-bulb:nth-child(4n+3) { background: #eab308; box-shadow: 0 0 10px #eab308; animation-delay: 0.8s; }
+        .light-bulb:nth-child(4n+4) { background: #3b82f6; box-shadow: 0 0 10px #3b82f6; animation-delay: 1.2s; }
+
+        @keyframes flash {
+            0% { opacity: 0.3; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* Pulse & Glow Effects */
+        .glow-text {
+            text-shadow: 0 0 20px rgba(239, 68, 68, 0.6), 0 0 40px rgba(34, 197, 94, 0.4);
+        }
+
+        .number-box {
+            transition: all 0.3s ease;
+        }
+        .number-box:hover {
+            transform: translateY(-5deg);
+            box-shadow: 0 10px 25px rgba(239, 68, 68, 0.3);
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-between min-h-screen relative p-4 sm:p-6">
+
+    <!-- Canvas para la nieve -->
+    <canvas id="snow-canvas"></canvas>
+
+    <!-- Tira de Luces Navideñas -->
+    <div class="w-full max-w-4xl flex justify-between items-center py-2 px-4 z-20">
+        <div class="light-bulb"></div><div class="light-bulb"></div><div class="light-bulb"></div>
+        <div class="light-bulb"></div><div class="light-bulb"></div><div class="light-bulb"></div>
+        <div class="light-bulb"></div><div class="light-bulb"></div><div class="light-bulb"></div>
+        <div class="light-bulb"></div><div class="light-bulb"></div><div class="light-bulb"></div>
+        <div class="light-bulb"></div><div class="light-bulb"></div><div class="light-bulb"></div>
+    </div>
+
+    <!-- Cabecera Principal -->
+    <header class="text-center z-20 mt-4 mb-6">
+        <h1 class="font-christmas text-5xl sm:text-7xl font-bold text-red-500 tracking-wider glow-text mb-2">
+            🎅 Cuenta Regresiva de Navidad 🎄
+        </h1>
+        <p class="text-gray-300 text-sm sm:text-lg max-w-md mx-auto">
+            ¡Siente la magia de la época más hermosa del año! ¿Cuánto falta para que llegue Santa?
+        </p>
+    </header>
+
+    <!-- Contenedor del Contador -->
+    <main class="w-full max-w-4xl z-20">
+        <div class="glass-card rounded-3xl p-6 sm:p-10 text-center relative overflow-hidden">
+            <!-- Adornos decorativos de esquinas -->
+            <div class="absolute -top-10 -left-10 text-6xl opacity-20 text-red-400 select-none">❄</div>
+            <div class="absolute -bottom-10 -right-10 text-6xl opacity-20 text-green-400 select-none">🎄</div>
+
+            <!-- Grilla del Contador -->
+            <div id="countdown-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 my-4">
+                
+                <!-- Días -->
+                <div class="number-box glass-card rounded-2xl p-4 sm:p-6 flex flex-col items-center justify-center border-t-4 border-red-500">
+                    <span id="days" class="text-4xl sm:text-6xl font-extrabold text-white tracking-tight">00</span>
+                    <span class="text-xs sm:text-sm uppercase tracking-widest text-red-300 font-semibold mt-2">Días</span>
+                </div>
+
+                <!-- Horas -->
+                <div class="number-box glass-card rounded-2xl p-4 sm:p-6 flex flex-col items-center justify-center border-t-4 border-green-500">
+                    <span id="hours" class="text-4xl sm:text-6xl font-extrabold text-white tracking-tight">00</span>
+                    <span class="text-xs sm:text-sm uppercase tracking-widest text-green-300 font-semibold mt-2">Horas</span>
+                </div>
+
+                <!-- Minutos -->
+                <div class="number-box glass-card rounded-2xl p-4 sm:p-6 flex flex-col items-center justify-center border-t-4 border-yellow-500">
+                    <span id="minutes" class="text-4xl sm:text-6xl font-extrabold text-white tracking-tight">00</span>
+                    <span class="text-xs sm:text-sm uppercase tracking-widest text-yellow-300 font-semibold mt-2">Minutos</span>
+                </div>
+
+                <!-- Segundos -->
+                <div class="number-box glass-card rounded-2xl p-4 sm:p-6 flex flex-col items-center justify-center border-t-4 border-blue-500">
+                    <span id="seconds" class="text-4xl sm:text-6xl font-extrabold text-white tracking-tight">00</span>
+                    <span class="text-xs sm:text-sm uppercase tracking-widest text-blue-300 font-semibold mt-2">Segundos</span>
+                </div>
+
+            </div>
+
+            <!-- Mensaje especial cuando llega Navidad -->
+            <div id="christmas-message" class="hidden my-8 animate-bounce">
+                <h2 class="font-christmas text-5xl sm:text-7xl font-bold text-yellow-400 mb-4">
+                    🎁 ¡¡FELIZ NAVIDAD!! 🎁
+                </h2>
+                <p class="text-xl sm:text-2xl text-white">
+                    ¡Que la Paz, el Amor y la Alegría llenen tu hogar en este hermoso día! 🎅✨
+                </p>
+            </div>
+
+            <!-- Botones Interactivos -->
+            <div class="mt-8 flex flex-wrap justify-center gap-4">
+                <button id="btn-audio" onclick="toggleAudio()" class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-full font-semibold transition-all duration-300 flex items-center gap-2 shadow-lg hover:scale-105">
+                    <i class="fas fa-music"></i>
+                    <span id="audio-text">Música Navideña</span>
+                </button>
+                <button onclick="triggerConfetti()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-full font-semibold transition-all duration-300 flex items-center gap-2 shadow-lg hover:scale-105">
+                    <i class="fas fa-gift"></i>
+                    <span>¡Enviar Espíritu Navideño!</span>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Pie de página -->
+    <footer class="z-20 text-center py-6 text-xs sm:text-sm text-gray-400">
+        <p>Hecho con ❤️ para celebrar la Navidad | Hospedado gratis en GitHub Pages 🚀</p>
+    </footer>
+
+    <!-- Lógica de Javascript -->
+    <script>
+        // --- 1. LÓGICA DEL CONTADOR REGRESIVO ---
+        function getNextChristmas() {
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            let christmas = new Date(currentYear, 11, 25, 0, 0, 0); // 25 de Diciembre
+            
+            // Si ya pasó el 25 de diciembre de este año, apuntamos a la del próximo año
+            if (now > christmas) {
+                christmas = new Date(currentYear + 1, 11, 25, 0, 0, 0);
+            }
+            return christmas;
+        }
+
+        const targetDate = getNextChristmas();
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = targetDate.getTime() - now;
+
+            if (distance < 0) {
+                // Llegó Navidad
+                document.getElementById('countdown-grid').classList.add('hidden');
+                document.getElementById('christmas-message').classList.remove('hidden');
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById('days').innerText = days < 10 ? '0' + days : days;
+            document.getElementById('hours').innerText = hours < 10 ? '0' + hours : hours;
+            document.getElementById('minutes').innerText = minutes < 10 ? '0' + minutes : minutes;
+            document.getElementById('seconds').innerText = seconds < 10 ? '0' + seconds : seconds;
+        }
+
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+
+        // --- 2. EFECTO DE NIEVE EN CANVAS ---
+        const canvas = document.getElementById('snow-canvas');
+        const ctx = canvas.getContext('2d');
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
+
+        const flakes = Array.from({ length: 120 }, () => ({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            radius: Math.random() * 3 + 1,
+            speed: Math.random() * 1.5 + 0.5,
+            opacity: Math.random() * 0.7 + 0.3,
+            swing: Math.random() * 0.05
+        }));
+
+        function drawSnow() {
+            ctx.clearRect(0, 0, width, height);
+            flakes.forEach(flake => {
+                ctx.beginPath();
+                ctx.arc(flake.x, flake.y, flake.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 255, 255, ${flake.opacity})`;
+                ctx.fill();
+
+                // Animación de caída y balanceo
+                flake.y += flake.speed;
+                flake.x += Math.sin(flake.y * flake.swing) * 0.5;
+
+                // Reiniciar cuando la nieve sale de pantalla
+                if (flake.y > height) {
+                    flake.y = -10;
+                    flake.x = Math.random() * width;
+                }
+            });
+            requestAnimationFrame(drawSnow);
+        }
+
+        drawSnow();
+
+        // --- 3. REPRODUCCIÓN DE MÚSICA DE FONDO SINTETIZADA ---
+        let audioCtx = null;
+        let isPlaying = false;
+        let audioTimer = null;
+
+        // Melodía de Jingle Bells usando Web Audio API (sin descargas externas)
+        const melody = [
+            { note: 659.25, duration: 250 }, // E5
+            { note: 659.25, duration: 250 }, // E5
+            { note: 659.25, duration: 500 }, // E5
+            { note: 659.25, duration: 250 }, // E5
+            { note: 659.25, duration: 250 }, // E5
+            { note: 659.25, duration: 500 }, // E5
+            { note: 659.25, duration: 250 }, // E5
+            { note: 783.99, duration: 250 }, // G5
+            { note: 523.25, duration: 375 }, // C5
+            { note: 587.33, duration: 125 }, // D5
+            { note: 659.25, duration: 1000}  // E5
+        ];
+
+        function playTone(freq, duration) {
+            if (!audioCtx) return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration / 1000);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration / 1000);
+            } catch(e) {}
+        }
+
+        function playMelodyLoop() {
+            let index = 0;
+            function step() {
+                if (!isPlaying) return;
+                const current = melody[index];
+                playTone(current.note, current.duration);
+                index = (index + 1) % melody.length;
+                audioTimer = setTimeout(step, current.duration + 50);
+            }
+            step();
+        }
+
+        function toggleAudio() {
+            const btnText = document.getElementById('audio-text');
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+
+            if (isPlaying) {
+                isPlaying = false;
+                clearTimeout(audioTimer);
+                btnText.innerText = "Música Navideña";
+            } else {
+                isPlaying = true;
+                playMelodyLoop();
+                btnText.innerText = "Pausar Música";
+            }
+        }
+
+        // --- 4. EFECTO DE ESPÍRITU NAVIDEÑO (PARTÍCULAS) ---
+        function triggerConfetti() {
+            for (let i = 0; i < 30; i++) {
+                const star = document.createElement('div');
+                star.innerHTML = ['✨', '🎁', '⭐', '🎄', '🔔'][Math.floor(Math.random() * 5)];
+                star.style.position = 'fixed';
+                star.style.left = Math.random() * 100 + 'vw';
+                star.style.top = '100vh';
+                star.style.fontSize = (Math.random() * 20 + 20) + 'px';
+                star.style.zIndex = '30';
+                star.style.transition = `all ${Math.random() * 2 + 2}s ease-out`;
+                star.style.pointerEvents = 'none';
+
+                document.body.appendChild(star);
+
+                setTimeout(() => {
+                    star.style.transform = `translateY(-${Math.random() * 80 + 50}vh) rotate(${Math.random() * 360}deg)`;
+                    star.style.opacity = '0';
+                }, 50);
+
+                setTimeout(() => {
+                    star.remove();
+                }, 4000);
+            }
+        }
+    </script>
+</body>
+</html>
